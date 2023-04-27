@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-//import { useMapEvents } from "react-leaflet";
+import React, { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -8,18 +7,28 @@ import {
   Popup,
   ScaleControl,
 } from "react-leaflet";
-import MarkerClusterGroup from "react-leaflet-markercluster";
 
-//import thai from "./thai.json";
 import bangkok from "./bangkok.json";
 
 export default function App() {
-  /* const [data, setData] = useState(bangkok); */
   const [info, setInfo] = useState({
     select: null,
     data: {},
     visible: false,
   });
+  const [position, setPosition] = useState(null);
+  const [map, setMap] = useState();
+
+  useEffect(() => {
+    if (map) {
+      console.log("map", map.target);
+      map.target.locate().on("locationfound", function (e) {
+        setPosition(e.latlng);
+        console.log("e.latlng", e.latlng);
+        map.target.flyTo(e.latlng, map.target.getZoom());
+      });
+    }
+  }, [map]);
 
   const formatNumber = (value) => {
     return parseFloat(value).toLocaleString("th-TH", {
@@ -177,24 +186,9 @@ export default function App() {
     height: "100vh",
   };
 
-  /* function LocationMarker() {
-    const [position, setPosition] = useState(null);
-    const map = useMapEvents({
-      click() {
-        map.locate();
-      },
-      locationfound(e) {
-        setPosition(e.latlng);
-        map.flyTo(e.latlng, map.getZoom());
-      },
-    });
-
-    return position === null ? null : (
-      <Marker position={position}>
-        <Popup>You are here</Popup>
-      </Marker>
-    );
-  } */
+  useEffect(() => {
+    console.log("position", position);
+  }, [position]);
 
   return (
     <>
@@ -344,6 +338,7 @@ export default function App() {
         style={containerStyle}
         attributionControl={true}
         doubleClickZoom={false}
+        whenReady={setMap}
       >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -351,12 +346,6 @@ export default function App() {
         />
 
         <ScaleControl position="bottomleft" />
-
-        {/* {data?.map((item, index) => (
-          <Marker key={index} position={[item.lat, item.lng]}>
-            <Popup>{`No.:${index} Lat:${item.lat} Lng:${item.lng}`}</Popup>
-          </Marker>
-        ))} */}
 
         {bangkok ? (
           <GeoJSON
@@ -395,13 +384,11 @@ export default function App() {
           />
         ) : null}
 
-        {/* <LocationMarker /> */}
-
-        {/* <MarkerClusterGroup>
-          <Marker position={[49.8397, 24.0297]} />
-          <Marker position={[52.2297, 21.0122]} />
-          <Marker position={[51.5074, -0.0901]} />
-        </MarkerClusterGroup> */}
+        {position === null ? null : (
+          <Marker position={position}>
+            <Popup>You are here</Popup>
+          </Marker>
+        )}
       </MapContainer>
     </>
   );

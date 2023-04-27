@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <!-- Call the MapLibre assets from the MapTiler CDN -->
+    <script src="https://cdn.maptiler.com/maplibre-gl-js/v1.14.0/maplibre-gl.js"></script>
+    <link href="https://cdn.maptiler.com/maplibre-gl-js/v1.14.0/maplibre-gl.css" rel="stylesheet" />
+    <!-- Position the map and style buttons -->
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        #buttons {
+            width: auto;
+            margin: 0 1em;
+            padding: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 99;
+        }
+
+        .button {
+            display: block;
+            position: relative;
+            cursor: pointer;
+            width: auto;
+            padding: 8px;
+            border-radius: 3px;
+            margin: 10px 0 0 0;
+            font-size: 12px;
+            text-align: center;
+            color: #fff;
+            background: #3174ff;
+            font-family: sans-serif;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Create the map and button html elements -->
+    <div id="map">
+        <ul id="buttons">
+            <li id="en" class="button">English</li>
+            <li id="th" class="button">Thai</li>
+            <li id="fr" class="button">French</li>
+            <li id="ja" class="button">Japanese</li>
+            <li id="ru" class="button">Russian</li>
+
+        </ul>
+        <a href="https://www.maptiler.com" style="position:absolute;left:10px;bottom:10px;z-index:999;"><img
+                src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"></a>
+    </div>
+    <p>
+        <a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a
+            href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>
+    </p>
+    <script>
+        // Instantiate the MapLibre map with MapTiler Streets
+        var map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://api.maptiler.com/maps/0b89f3b6-564a-4f1c-a455-21b3f85929d2/style.json?key=COi2xLh0MxrtUuPpy1Sj',
+        });
+        // Add a click event on button elements
+        document.getElementById('buttons').addEventListener('click', function (event) {
+            // Retrieve language based on button id
+            var language = event.target.id;
+            // Set the new language to all countries layers
+            map.setLayoutProperty('airport_1', 'text-field', ['get', 'name:' + language]);
+            map.setLayoutProperty('road_1', 'text-field', ['get', 'name:' + language]);
+            map.setLayoutProperty('place_1', 'text-field', ['get', 'name:' + language]);
+            map.setLayoutProperty('city_1', 'text-field', ['get', 'name:' + language]);
+            map.setLayoutProperty('country_1', 'text-field', ['get', 'name:' + language]);
+        });
+    </script>
+</body>
+
+</html>
